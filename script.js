@@ -442,9 +442,10 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
                 this.systemPrompt = savedSystemPrompt;
             }
 
-            if (savedTemplates) {
-                this.promptTemplates = JSON.parse(savedTemplates);
-            }
+            // テンプレートのローカルストレージ読み込みを無効化してデフォルト全テンプレートを使用
+            // if (savedTemplates) {
+            //     this.promptTemplates = JSON.parse(savedTemplates);
+            // }
 
             if (savedBotType && this.botTemplates[savedBotType]) {
                 // ページ読み込み後に専門ボットの状態を復元
