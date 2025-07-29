@@ -740,27 +740,53 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
     }
 
     renderQuickTemplateList() {
-        const quickTemplateList = document.getElementById('template-quick-list');
-        if (!quickTemplateList) return;
+        this.renderTemplateDropdown();
+    }
 
-        quickTemplateList.innerHTML = '';
+    renderTemplateDropdown() {
+        const templateDropdown = document.getElementById('template-dropdown');
+        if (!templateDropdown) return;
 
-        const templatesForCurrentBot = this.getTemplatesForCurrentBot();
-        templatesForCurrentBot.forEach((template, filteredIndex) => {
-            // 元の配列でのインデックスを見つける
-            const originalIndex = this.promptTemplates.findIndex(t => t.name === template.name && t.content === template.content);
+        // 既存のオプション（最初のdefaultオプション以外）を削除
+        const defaultOption = templateDropdown.querySelector('option[value=""]');
+        templateDropdown.innerHTML = '';
+        templateDropdown.appendChild(defaultOption);
 
-            const quickItem = document.createElement('div');
-            quickItem.className = 'template-quick-item';
-            quickItem.innerHTML = `
-                <i class="fas fa-magic"></i>
-                <span>${this.escapeHtml(template.name)}</span>
-            `;
-            quickItem.addEventListener('click', () => {
-                this.applyTemplateToSystemPrompt(originalIndex);
-            });
-            quickTemplateList.appendChild(quickItem);
+        // 全てのテンプレートをプルダウンに追加
+        this.promptTemplates.forEach((template, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = template.name;
+            templateDropdown.appendChild(option);
         });
+
+        // 選択状態をリセット
+        templateDropdown.value = '';
+        const applyBtn = document.getElementById('apply-template-btn');
+        if (applyBtn) {
+            applyBtn.disabled = true;
+        }
+    }
+
+    onTemplateSelected() {
+        const templateDropdown = document.getElementById('template-dropdown');
+        const applyBtn = document.getElementById('apply-template-btn');
+
+        if (templateDropdown && applyBtn) {
+            applyBtn.disabled = !templateDropdown.value;
+        }
+    }
+
+    applySelectedTemplate() {
+        const templateDropdown = document.getElementById('template-dropdown');
+        if (templateDropdown && templateDropdown.value) {
+            const templateIndex = parseInt(templateDropdown.value);
+            this.applyTemplateToSystemPrompt(templateIndex);
+
+            // 成功メッセージを表示
+            const template = this.promptTemplates[templateIndex];
+            this.showTemporaryMessage(`「${template.name}」をシステムプロンプトに適用しました`, 'success');
+        }
     }
 
     renderTemplateList() {
@@ -1369,6 +1395,14 @@ function deleteTemplate(index) {
 
 function selectSpecializedBot(botType) {
     window.aiAssistant.selectSpecializedBot(botType);
+}
+
+function onTemplateSelected() {
+    window.aiAssistant.onTemplateSelected();
+}
+
+function applySelectedTemplate() {
+    window.aiAssistant.applySelectedTemplate();
 }
 
 function resetToGeneralMode() {

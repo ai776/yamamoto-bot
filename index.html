@@ -179,9 +179,18 @@
             <div class="setting-section">
                 <h4 class="section-title">プロンプトテンプレート</h4>
                 <div class="setting-item">
-                    <p class="template-description">テンプレートをクリックするとシステムプロンプトに反映されます</p>
-                    <div id="template-quick-list" class="template-quick-list">
-                        <!-- 動的に生成される -->
+                    <p class="template-description">テンプレートを選択してシステムプロンプトに反映できます</p>
+                    <div class="template-dropdown-container">
+                        <select id="template-dropdown" class="template-dropdown" onchange="onTemplateSelected()">
+                            <option value="">テンプレートを選択してください</option>
+                            <!-- 動的に生成される -->
+                        </select>
+                        <button class="apply-template-btn" id="apply-template-btn" onclick="applySelectedTemplate()" disabled>
+                            適用
+                        </button>
+                    </div>
+                    <div id="template-quick-list" class="template-quick-list" style="display: none;">
+                        <!-- 従来のクリック式テンプレートは非表示 -->
                     </div>
                     <div class="template-controls">
                         <button class="template-btn" onclick="addTemplateField()">
