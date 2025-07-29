@@ -1,11 +1,13 @@
 {
   "name": "yamamoto-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dify AI Chatbot",
+  "author": "ai776",
   "main": "index.html",
   "type": "module",
   "scripts": {
-    "build": "echo 'No build step required'"
+    "build": "echo 'No build step required'",
+    "start": "serve ."
   },
   "dependencies": {},
   "devDependencies": {}
