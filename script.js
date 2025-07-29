@@ -766,15 +766,21 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
         if (applyBtn) {
             applyBtn.disabled = true;
         }
+
+        // テンプレートリストも更新（何も選択されていないので空になる）
+        this.renderTemplateList();
     }
 
-    onTemplateSelected() {
+        onTemplateSelected() {
         const templateDropdown = document.getElementById('template-dropdown');
         const applyBtn = document.getElementById('apply-template-btn');
 
         if (templateDropdown && applyBtn) {
             applyBtn.disabled = !templateDropdown.value;
         }
+
+        // 選択されたテンプレートのみを下のリストに表示
+        this.renderTemplateList();
     }
 
     applySelectedTemplate() {
@@ -795,22 +801,28 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
 
         templateList.innerHTML = '';
 
-        const templatesForCurrentBot = this.getTemplatesForCurrentBot();
-        templatesForCurrentBot.forEach((template, filteredIndex) => {
-            // 元の配列でのインデックスを見つける
-            const originalIndex = this.promptTemplates.findIndex(t => t.name === template.name && t.content === template.content);
+        // プルダウンで選択されたテンプレートのみ表示
+        const templateDropdown = document.getElementById('template-dropdown');
+        if (!templateDropdown || !templateDropdown.value) {
+            // 何も選択されていない場合は何も表示しない
+            return;
+        }
 
-            const templateItem = document.createElement('div');
-            templateItem.className = 'template-item';
-            templateItem.innerHTML = `
-                <div class="template-item-header">
-                    <input type="text" class="template-name-input" value="${this.escapeHtml(template.name)}" placeholder="テンプレート名">
-                    <button class="template-delete-btn" onclick="deleteTemplate(${originalIndex})">削除</button>
-                </div>
-                <textarea class="template-content-input" placeholder="プロンプトテンプレート（＜変数名＞で入力項目を作成）">${this.escapeHtml(template.content)}</textarea>
-            `;
-            templateList.appendChild(templateItem);
-        });
+        const selectedIndex = parseInt(templateDropdown.value);
+        const template = this.promptTemplates[selectedIndex];
+
+        if (!template) return;
+
+        const templateItem = document.createElement('div');
+        templateItem.className = 'template-item';
+        templateItem.innerHTML = `
+            <div class="template-item-header">
+                <input type="text" class="template-name-input" value="${this.escapeHtml(template.name)}" placeholder="テンプレート名">
+                <button class="template-delete-btn" onclick="deleteTemplate(${selectedIndex})">削除</button>
+            </div>
+            <textarea class="template-content-input" placeholder="プロンプトテンプレート（＜変数名＞で入力項目を作成）">${this.escapeHtml(template.content)}</textarea>
+        `;
+        templateList.appendChild(templateItem);
     }
 
     applyTemplateToSystemPrompt(templateIndex) {
