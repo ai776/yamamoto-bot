@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ビジネスサイボーグ 山本</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="mobile-chat-container" id="chat-container">
+        <!-- モバイルヘッダー -->
+        <div class="mobile-header">
+            <div class="header-logo">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h1 class="chat-title" id="chat-title">汎用AIアシスタント</h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="resetToGeneralMode()" title="汎用モードに戻る">
+                    <i class="fas fa-home"></i>
+                </button>
+                <button class="header-btn" onclick="showManual()">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="header-btn" onclick="toggleSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- チャットメッセージエリア -->
+        <div class="chat-messages" id="chat-messages">
+            <!-- 初期メッセージは削除 - JavaScript側で管理 -->
+        </div>
+
+        <!-- プロンプトテンプレートエリア -->
+        <div class="prompt-template-area" id="prompt-template-area" style="display: none;">
+            <div class="template-header">
+                <h4 id="template-title">テンプレート</h4>
+                <button class="close-template-btn" onclick="closeTemplateArea()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="template-content">
+                <div class="template-text" id="template-text"></div>
+                <div class="template-inputs" id="template-inputs"></div>
+                <button class="apply-template-btn" id="apply-template-btn" onclick="applyTemplate()">
+                    テンプレートを適用
+                </button>
+            </div>
+        </div>
+
+        <!-- 専門ボット選択エリア -->
+        <div class="bot-selection-area" id="bot-selection-area">
+            <div class="bot-selection-header" onclick="toggleBotSelection()">
+                <div class="expand-icon" id="expand-icon">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <span class="bot-selection-title">専門ボットを選択</span>
+            </div>
+            <div class="bot-buttons" id="bot-buttons" style="display: grid;">
+                <button class="bot-btn" data-bot="yamamoto" onclick="selectSpecializedBot('yamamoto')">
+                    <div class="bot-btn-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span class="bot-btn-text">山本さんボット</span>
+                </button>
+                <button class="bot-btn" data-bot="twitter" onclick="selectSpecializedBot('twitter')">
+                    <div class="bot-btn-icon">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <span class="bot-btn-text">X投稿</span>
+                </button>
+                <button class="bot-btn" data-bot="facebook" onclick="selectSpecializedBot('facebook')">
+                    <div class="bot-btn-icon">
+                        <i class="fab fa-facebook"></i>
+                    </div>
+                    <span class="bot-btn-text">Facebook投稿</span>
+                </button>
+                <button class="bot-btn" data-bot="profile" onclick="selectSpecializedBot('profile')">
+                    <div class="bot-btn-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <span class="bot-btn-text">自己プロフィール</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 入力エリア -->
+        <div class="chat-input-area">
+            <div class="input-tools">
+                <div class="input-tools-header" onclick="toggleInputTools()">
+                    <div class="tools-expand-icon" id="tools-expand-icon">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <div class="input-buttons" id="input-buttons" style="display: none;">
+                    <button class="input-btn" onclick="showTemplateArea()">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                    <button class="input-btn">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                    <button class="input-btn">
+                        <i class="fas fa-image"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea
+                        id="message-input"
+                        placeholder="メッセージを入力してください..."
+                        rows="1"
+                    ></textarea>
+                    <button class="minimize-btn" id="minimize-btn" onclick="minimizeInput()" style="display: none;">
+                        <i class="fas fa-compress-alt"></i>
+                    </button>
+                </div>
+                <button class="send-button" id="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <button class="voice-btn">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 設定パネル -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3>設定</h3>
+            <button onclick="toggleSettings()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-content">
+            <div class="setting-section">
+                <h4 class="section-title">専門ボット選択</h4>
+                <div class="setting-item">
+                    <p class="template-description">表示するプロンプトテンプレートをフィルタリングします</p>
+                    <div class="bot-selection-buttons">
+                        <button class="bot-filter-btn" data-bot="all" onclick="filterTemplatesByBot('all')">
+                            <i class="fas fa-globe"></i>
+                            <span>全て表示</span>
+                        </button>
+                        <button class="bot-filter-btn" data-bot="yamamoto" onclick="filterTemplatesByBot('yamamoto')">
+                            <i class="fas fa-chart-line"></i>
+                            <span>山本さんボット</span>
+                        </button>
+                        <button class="bot-filter-btn" data-bot="twitter" onclick="filterTemplatesByBot('twitter')">
+                            <i class="fab fa-twitter"></i>
+                            <span>X投稿</span>
+                        </button>
+                        <button class="bot-filter-btn" data-bot="facebook" onclick="filterTemplatesByBot('facebook')">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook投稿</span>
+                        </button>
+                        <button class="bot-filter-btn" data-bot="profile" onclick="filterTemplatesByBot('profile')">
+                            <i class="fas fa-user-edit"></i>
+                            <span>プロフィール作成</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4 class="section-title">システムプロンプト</h4>
+                <div class="setting-item">
+                    <textarea
+                        id="system-prompt"
+                        class="system-prompt-input"
+                        placeholder="AIの基本的な役割や振る舞いを設定してください...">あなたは親切で役立つAIアシスタントです。ユーザーの質問に対して正確で分かりやすい回答を提供してください。</textarea>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4 class="section-title">プロンプトテンプレート</h4>
+                <div class="setting-item">
+                    <p class="template-description">テンプレートをクリックするとシステムプロンプトに反映されます</p>
+                    <div id="template-quick-list" class="template-quick-list">
+                        <!-- 動的に生成される -->
+                    </div>
+                    <div class="template-controls">
+                        <button class="template-btn" onclick="addTemplateField()">
+                            <i class="fas fa-plus"></i>
+                            テンプレート追加
+                        </button>
+                    </div>
+                    <div id="template-list" class="template-list">
+                        <!-- 動的に生成される -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4 class="section-title">操作</h4>
+                <div class="setting-item">
+                    <button class="save-btn" onclick="saveSettings()">
+                        <i class="fas fa-save"></i>
+                        設定を保存
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="clear-btn" onclick="clearChat()">
+                        <i class="fas fa-trash"></i>
+                        チャット履歴をクリア
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- マニュアルパネル -->
+    <div class="manual-panel" id="manual-panel">
+        <div class="manual-header">
+            <h3>使い方ガイド</h3>
+            <button onclick="toggleManual()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="manual-content">
+            <div class="manual-section">
+                <h4>基本的な使い方</h4>
+                <ol>
+                    <li>メッセージを入力してAIとチャットします</li>
+                    <li>魔法アイコン（⚡）でプロンプトテンプレートを使用できます</li>
+                    <li>設定（⚙️）でシステムプロンプトやテンプレートを編集できます</li>
+                </ol>
+            </div>
+
+            <div class="manual-section">
+                <h4>システムプロンプトについて</h4>
+                <p>AIの基本的な役割や振る舞いを設定します。例：</p>
+                <ul>
+                    <li>「あなたはマーケティング専門家です」</li>
+                    <li>「親切な日本語教師として回答してください」</li>
+                    <li>「プログラミングの質問に特化して答えてください」</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h4>プロンプトテンプレートについて</h4>
+                <p>よく使うプロンプトの形式をテンプレート化できます。<br>
+                &lt;&gt;で囲んだ部分が入力フィールドになります。</p>
+                <div class="example-box">
+                    <strong>例：</strong><br>
+                    &lt;商品名&gt;について、&lt;ターゲット&gt;向けのキャッチコピーを3つ考えてください。
+                </div>
+            </div>
+
+            <div class="manual-section">
+                <h4>効果的な使い方のコツ</h4>
+                <ul>
+                    <li>具体的で明確な指示を出す</li>
+                    <li>出力形式を指定する（箇条書き、表形式など）</li>
+                    <li>例を示して期待する回答の形式を明確にする</li>
+                    <li>テンプレートを活用して効率化する</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
