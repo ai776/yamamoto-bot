@@ -760,40 +760,27 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
             templateDropdown.appendChild(option);
         });
 
-        // 選択状態をリセット
+                // 選択状態をリセット
         templateDropdown.value = '';
-        const applyBtn = document.getElementById('apply-template-btn');
-        if (applyBtn) {
-            applyBtn.disabled = true;
-        }
 
         // テンプレートリストも更新（何も選択されていないので空になる）
         this.renderTemplateList();
     }
 
-        onTemplateSelected() {
+            onTemplateSelected() {
         const templateDropdown = document.getElementById('template-dropdown');
-        const applyBtn = document.getElementById('apply-template-btn');
 
-        if (templateDropdown && applyBtn) {
-            applyBtn.disabled = !templateDropdown.value;
+        if (templateDropdown && templateDropdown.value) {
+            // 選択されたテンプレートを即座にシステムプロンプトに適用
+            const templateIndex = parseInt(templateDropdown.value);
+            this.applyTemplateToSystemPrompt(templateIndex);
         }
 
         // 選択されたテンプレートのみを下のリストに表示
         this.renderTemplateList();
     }
 
-    applySelectedTemplate() {
-        const templateDropdown = document.getElementById('template-dropdown');
-        if (templateDropdown && templateDropdown.value) {
-            const templateIndex = parseInt(templateDropdown.value);
-            this.applyTemplateToSystemPrompt(templateIndex);
-
-            // 成功メッセージを表示
-            const template = this.promptTemplates[templateIndex];
-            this.showTemporaryMessage(`「${template.name}」をシステムプロンプトに適用しました`, 'success');
-        }
-    }
+        // applySelectedTemplate関数は不要になったため削除
 
     renderTemplateList() {
         const templateList = document.getElementById('template-list');
@@ -1411,10 +1398,6 @@ function selectSpecializedBot(botType) {
 
 function onTemplateSelected() {
     window.aiAssistant.onTemplateSelected();
-}
-
-function applySelectedTemplate() {
-    window.aiAssistant.applySelectedTemplate();
 }
 
 function resetToGeneralMode() {
