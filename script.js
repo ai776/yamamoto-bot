@@ -1103,13 +1103,6 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
             systemPromptInput.value = this.systemPrompt;
         }
 
-        // メッセージ入力欄にプロンプトテンプレートを設定
-        const messageInput = document.getElementById('message-input');
-        if (messageInput) {
-            messageInput.value = botTemplate.placeholder;
-            messageInput.placeholder = 'プロンプトを編集してください...';
-        }
-
         // チャットタイトルを更新
         const chatTitle = document.getElementById('chat-title');
         if (chatTitle) {
