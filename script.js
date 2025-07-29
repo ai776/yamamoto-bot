@@ -875,12 +875,45 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
     }
 
     addTemplate() {
-        this.promptTemplates.push({
-            name: '新しいテンプレート',
-            content: '＜変数＞について教えてください。'
-        });
+        // 現在のボットタイプに合わせてテンプレート名のプレフィックスを決定
+        let prefix = '';
+        switch (this.currentBotType) {
+            case 'yamamoto':
+                prefix = '山本さんボット';
+                break;
+            case 'twitter':
+                prefix = 'X投稿';
+                break;
+            case 'facebook':
+                prefix = 'Facebook投稿';
+                break;
+            case 'profile':
+                prefix = 'プロフィール作成';
+                break;
+            default:
+                prefix = '汎用テンプレート';
+        }
+
+        const newTemplate = {
+            name: `${prefix}（新規）`,
+            content: '＜ここにテンプレート内容を入力＞'
+        };
+
+        // テンプレートを追加
+        this.promptTemplates.push(newTemplate);
+
+        // 新しく追加したテンプレートのインデックス
+        const newIndex = this.promptTemplates.length - 1;
+
+        // プルダウンを再描画して新しいテンプレートを選択状態にする
+        this.renderTemplateDropdown();
+        const templateDropdown = document.getElementById('template-dropdown');
+        if (templateDropdown) {
+            templateDropdown.value = newIndex;
+        }
+
+        // リストを更新して編集可能状態にする
         this.renderTemplateList();
-        this.renderQuickTemplateList();
     }
 
     deleteTemplate(index) {
