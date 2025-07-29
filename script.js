@@ -723,20 +723,32 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
     }
 
     updateTemplatesFromUI() {
-        const templateItems = document.querySelectorAll('.template-item');
-        this.promptTemplates = [];
+        const templateDropdown = document.getElementById('template-dropdown');
+        const templateItems   = document.querySelectorAll('.template-item');
 
-        templateItems.forEach(item => {
-            const nameInput = item.querySelector('.template-name-input');
-            const contentInput = item.querySelector('.template-content-input');
+        // 編集対象が無い場合は何もしない
+        if (!templateDropdown || !templateDropdown.value || templateItems.length === 0) {
+            return;
+        }
 
-            if (nameInput && contentInput && nameInput.value.trim() && contentInput.value.trim()) {
-                this.promptTemplates.push({
-                    name: nameInput.value.trim(),
-                    content: contentInput.value.trim()
-                });
-            }
-        });
+        const selectedIndex = parseInt(templateDropdown.value);
+        if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= this.promptTemplates.length) {
+            return;
+        }
+
+        // 画面に表示されているテンプレートは 1 件だけなので先頭を取得
+        const item = templateItems[0];
+        const nameInput    = item.querySelector('.template-name-input');
+        const contentInput = item.querySelector('.template-content-input');
+
+        if (nameInput && contentInput) {
+            const newName    = nameInput.value.trim();
+            const newContent = contentInput.value.trim();
+
+            // 必要に応じて名称・内容を更新
+            if (newName)    this.promptTemplates[selectedIndex].name    = newName;
+            if (newContent) this.promptTemplates[selectedIndex].content = newContent;
+        }
     }
 
     renderQuickTemplateList() {
