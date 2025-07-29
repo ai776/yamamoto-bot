@@ -753,14 +753,16 @@ WEB事業では、2017年に物販専門会社を設立。巷で話題になっ�
         templateDropdown.appendChild(defaultOption);
 
         // 全てのテンプレートをプルダウンに追加
-        this.promptTemplates.forEach((template, index) => {
+        const templatesForCurrentBot = this.getTemplatesForCurrentBot();
+        templatesForCurrentBot.forEach((template) => {
+            const index = this.promptTemplates.findIndex(t => t.name === template.name && t.content === template.content);
             const option = document.createElement('option');
             option.value = index;
             option.textContent = template.name;
             templateDropdown.appendChild(option);
         });
 
-                // 選択状態をリセット
+        // 選択状態をリセット
         templateDropdown.value = '';
 
         // テンプレートリストも更新（何も選択されていないので空になる）
