@@ -1,15 +1,13 @@
 {
   "name": "yamamoto-bot",
-  "version": "2.0.0",
-  "description": "Dify AI Chatbot - Enhanced Version",
+  "version": "1.1.0",
+  "description": "Dify AI Chatbot",
   "author": "ai776",
-  "license": "MIT",
   "main": "index.html",
   "type": "module",
   "scripts": {
     "build": "echo 'No build step required'",
-    "start": "serve .",
-    "dev": "live-server"
+    "start": "serve ."
   },
   "dependencies": {},
   "devDependencies": {}
